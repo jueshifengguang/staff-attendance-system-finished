@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- sql语句  -->
+<mapper namespace="com.as.mapping.TemporaryovertimeDao">
+    <select id="findTempOvertimeByToid" parameterType="Integer" resultType="com.as.entity.Temporaryovertime">
+        select * from temporaryovertime where to_id=#{to_id}
+    </select>
+
+
+	<insert id="insertTempOvertime" parameterType="Map">
+		insert into temporaryovertime(t_overtime_start,t_overtime_end,t_o_reason) values(#{t_overtime_start},#{t_overtime_end},#{t_o_reason})
+	</insert>
+
+
+	<update id="updateTempovertimeByToid" parameterType="Map">
+   		update temporaryovertime
+   		<trim prefix="set" suffixOverrides=",">
+   			<!-- <if test="_parameter.containsKey('t_overtime_start')"> -->
+   			<if test="t_overtime_start != null">
+   				t_overtime_start=#{t_overtime_start},
+   			</if>
+   			<if test="t_overtime_end != null">
+   				t_overtime_end=#{t_overtime_end},
+   			</if>
+   			<if test="t_o_reason != null">
+   				t_o_reason=#{t_o_reason}
+   			</if>
+   		</trim>
+   		where to_id=#{to_id}
+   	</update>
+   	
+   	
+   	<select id="selectAllTempOvertime" parameterType="Integer" resultType="com.as.entity.Temporaryovertime">
+        select * from temporaryovertime
+    </select>
+    
+    <select id="selectTmpOvertimeByNowDate" parameterType="Map" resultType="com.as.entity.Temporaryovertime">
+		select * from temporaryovertime where t_overtime_start>#{t_overtime_start}
+    </select>
+    
+    <delete id="deleteTempovertimeByToid" parameterType="Integer">
+    	delete from temporaryovertime where to_id=#{to_id}
+    </delete>
+</mapper>

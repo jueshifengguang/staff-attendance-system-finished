@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- sql语句  -->
+<!-- 有可能多个mapper中有相同id 所以使用namespace区分必填参数 -->
+<mapper namespace="com.as.mapping.AttendanceDao">
+    <!-- 根据id获取User 
+        id用来标识这个sql语句
+        parameterType 指定输入参数的类型
+        resultType 输出结果的类型
+    -->
+    <select id="findAttByAttId" parameterType="Integer" resultType="com.as.entity.Attendance">
+        <!-- 原生sql语句 
+            #{}代表占位符 等同于?
+            括号中的内容可以随便写，但不能不写
+        -->
+        select * from attendance where at_id=#{id}
+    </select>
+
+    <!-- 根据id获取User 
+        id用来标识这个sql语句
+        parameterType 指定输入参数的类型
+        resultType 输出结果的类型
+    -->
+    <select id="findAttById" parameterType="Integer" resultType="com.as.entity.Attendance">
+        <!-- 原生sql语句 
+            #{}代表占位符 等同于?
+            括号中的内容可以随便写，但不能不写
+        -->
+        select * from attendance where s_id=#{id}
+    </select>
+    
+    <!-- 按照部门id查找 -->
+    <select id="findAttByDepId" parameterType="Integer" resultType="com.as.entity.Attendance">
+        select * from attendance where dep_id=#{id}
+    </select>
+
+    <!-- 按照月份和部门id查找 -->
+    <select id="fintAttByMonth" parameterType="Map" resultType="com.as.entity.Attendance">
+        <!-- select * from attendance where clock_in=#{id} -->
+        select  * from attendance where clock_in &gt;= #{firstDate}  and clock_in &lt; #{lastDate} and dep_id = #{depId}
+    </select>
+    
+    <!-- 通过日期和员工id查找表的id  -->
+    <select id="findAtidBySidAndDate" parameterType="Map" resultType="com.as.entity.Attendance">
+        <!-- select * from attendance where clock_in=#{id} -->
+        select  * from attendance where clock_in &gt;= #{firstDate}  and clock_in &lt; #{lastDate} and s_id=#{s_id}
+    </select>
+  
+    <!-- 通过日期和员工id查找表  -->
+    <select id="findAttBySidAndDate" parameterType="Map" resultType="com.as.entity.Attendance">
+        <!-- select * from attendance where clock_in=#{id} -->
+        select  * from attendance where clock_in &gt;= #{firstDate}  and clock_in &lt; #{lastDate} and s_id=#{s_id}
+    </select>  
+    
+    <!-- 按部门id和月份查找考勤记录 -->
+    <select id="findAttByMonthAndDepid" parameterType="Map" resultType="com.as.entity.Attendance">
+    	select * from attendance where clock_in &gt;= #{firstDate} and clock_in &lt; #{lastDate} and dep_id = #{dep_id} order  by CAST(clock_in ASDATE),s_id;
+    </select>
+ 
+ 
+     <!-- 通过表的id更新状态 
+    <update id="updateAttendanceStatus" parameterType="Map">
+    update attendance set attendance_status =#{status} where at_id = #{at_id}
+    </update>
+    -->
+    
+    <!-- 通过员工ID和日期更新打卡的下班时间和状态 -->
+    <update id="updateAttByDateAndSid" parameterType="Map">
+    update attendance 
+    <trim prefix="set" suffixOverrides=",">
+         <if test="clock_off != null">
+                clock_off = #{clock_off},
+         </if>
+         <if test="attendance_status != null ">
+                attendance_status = #{attendance_status},
+         </if>
+    </trim>
+          where	s_id = #{s_id} and clock_in &gt;= #{firstDate} and clock_in &lt; #{lastDate}
+
+    </update>
+       
+    <!-- 通过表的id更新打卡的第二个时间和状态 -->
+    <update id="updateAttendanceByAtid" parameterType="Map">
+    update attendance 
+    <trim prefix="set" suffixOverrides=",">
+         <if test="clock_off != null">
+                clock_off = #{clock_off},
+         </if>
+         <if test="attendance_status != null ">
+                attendance_status = #{attendance_status}
+         </if>
+
+    </trim>
+          where	at_id=#{at_id}
+
+    </update>
+  
+  <!-- 新增考勤记录 -->
+  	<insert id="insertNewAtt" parameterType="Map">
+		insert into attendance(s_id,dep_id,clock_in,attendance_status,is_overtime,record_id) values(#{s_id},#{dep_id},#{clock_in},#{attendance_status},#{is_overtime},#{record_id}) 
+	</insert>
+  
+    <!-- 删除某条记录 -->
+    <delete id="deleteAttdanceByAtid" parameterType="Integer">
+    	delete from attendance where at_id=#{id}
+    </delete>
+    
+    <select id="findAttendanceByRecordId" parameterType="Map" resultType="com.as.entity.Attendance">
+    	select * from attendance where is_overtime=#{is_overtime} and record_id=#{record_id}
+    </select>
+</mapper>

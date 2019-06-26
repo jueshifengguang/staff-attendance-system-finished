@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- sql语句  -->
+<mapper namespace="com.as.mapping.ShiftWorkDao">
+
+	<insert id="insertShiftWork" parameterType="Map">
+		insert into shiftwork(s_id,dep_id,working_start,working_end,attendence_status) values(#{s_id},#{dep_id},#{working_start},#{working_end},0)
+	</insert>
+	   
+    <delete id="deleteShiftWork" parameterType="Integer">
+    	delete from shiftwork where sw_id=#{sw_id}
+    </delete>
+
+	<update id="updateShiftWork" parameterType="Map">
+   		update shiftwork
+   		<trim prefix="set" suffixOverrides=",">
+   			<if test="s_id != null">
+   				s_id=#{s_id},
+   			</if>
+   			<if test="dep_id != null">
+   				dep_id=#{dep_id},
+   			</if>
+   			<if test="working_start != null">
+   				working_start=#{working_start},
+   			</if>
+   			<if test="working_end != null">
+   				working_end=#{working_end},
+   			</if>
+   			<if test="attendence_status != null">
+   				attendence_status=#{attendence_status}
+   			</if>
+   			
+   		</trim>
+   		where sw_id=#{sw_id}
+   	</update>
+   	
+   	<!-- 返回该天该员工的打卡状态 -->
+   	<select id="getAttenStatus" parameterType="Map"  resultType="com.as.entity.ShiftWork">
+   		select * from shiftwork where working_start like #{date}"%" and s_id=#{s_id} 
+   	</select>
+   	
+   	
+	<!-- 某部门某月 -->
+    <select id="selectAllStaffWorkConByMonthByDep" parameterType="Map" resultType="com.as.entity.ShiftWork">
+        select * from shiftwork where dep_id=#{dep_id} and working_start&lt;#{working_start_end} and working_start&gt;=#{working_start_start} order by cast(working_start as date), s_id
+    </select>
+    
+    <!-- 某部门某月某员工 -->
+   	<select id="selectOneStaffWorkConByMonthByDep" parameterType="Map" resultType="com.as.entity.ShiftWork">
+        select * from shiftwork where dep_id=#{dep_id} and s_id=#{s_id} and working_start&lt;#{working_start_end} and working_start&gt;=#{working_start_start}
+    </select>
+    
+    <!-- 通过记录id查找该记录 -->
+   	<select id="findShiftWorkByswid" parameterType="Integer"  resultType="com.as.entity.ShiftWork">
+   		select * from shiftwork where sw_id=#{sw_id} 
+   	</select>
+ 
+</mapper>

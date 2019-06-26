@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <!-- sql语句 -->
+ <mapper namespace="com.as.mapping.MessageDao">
+	<insert id="insertNewMessage" parameterType="Map">
+		insert into message(m_id,s_id,is_read,m_time,m_content) values(#{m_id},#{s_id},#{is_read},#{m_time},#{m_content})
+	</insert>
+	
+	<update id="updateMessage" parameterType="Map">
+		update message
+		<trim prefix="set" suffixOverrides=",">
+			<if test="s_id != null">
+				s_id=#{s_id},
+			</if>
+			<if test="is_read != null">
+				is_read=#{is_read},
+			</if>
+			<if test="m_time != null">
+				m_time=#{m_time},
+			</if>
+			<if test="m_content != null">
+				m_content=#{m_content},
+			</if>
+		</trim>
+		where m_id=#{m_id}
+	</update>
+	
+	
+	 <delete id="deleteMessage" parameterType="Integer">
+	 	delete from message where m_id=#{m_id}
+	 </delete>
+	 
+	 <select id="selectReadMessageApply" parameterType="Integer" resultType="com.as.entity.Message">
+	 	select * from message where is_read=1 and s_id=#{s_id}
+	 </select>
+	 <select id="selectNoReadMessageApply" parameterType="Integer" resultType="com.as.entity.Message">
+	 	select * from message where is_read=0 and s_id=#{s_id}
+	 </select>
+	 
+	 <select id="findMessageByMid" parameterType="Integer" resultType="com.as.entity.Message">
+		select * from message where m_id=#{m_id}
+	</select>
+	
+</mapper>

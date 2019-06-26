@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <!--sql语句-->
+  <!-- 有可能多个mapper中有相同id 所以使用namespace区分必填参数 -->
+<mapper namespace="com.as.mapping.StaffDao">
+    <!-- 根据id获取User 
+        id用来标识这个sql语句
+        parameterType 指定输入参数的类型
+        resultType 输出结果的类型
+    -->
+    <select id="findStaffById" parameterType="Integer" resultType="com.as.entity.Staff">
+        <!-- 原生sql语句 
+            #{}代表占位符 等同于?
+            括号中的内容可以随便写，但不能不写
+        -->
+        select * from staff where s_id=#{s_id}
+    </select>
+
+    <!-- 
+        "%${value}%"
+        如果当前参数需要拼接到字符串中就使用${value} 
+        如果只有只一个参数 value是固定的
+        因为#{xx} 会在字符串左右加上引号
+        "%#{xx}%" == "%"xx"%"
+        resultType 是结果的泛型 如果有多个结果 自动封装list
+    -->
+  <!-- <select id="selectByStaffName" parameterType="String" resultType="com.as.entity.Staff">
+        select * from staff where s_name like "%"#{value}"%"
+    </select> --> 
+
+    <!-- 添加新数据
+     insert中不需要声明返回类型 因为只有Integer
+        仅支持一个参数 参数比较复杂就直接传对象 或者map
+        获取属性 或者map 通过#{属性名} 或 #{key名} 
+    -->
+    <insert id="insertNewStaffInfoReturnId" parameterType="Map">
+        insert into staff(s_id,s_name,dep_id,entry_time,identity,s_pass) values(#{s_id},#{s_name},#{dep_id},#{entry_time},#{identity},#{s_pass})
+    </insert>
+    <!-- 修改数据
+    update中不需要声明返回类型 因为只有Integer
+    仅支持一个参数 参数比较复杂就直接传对象
+     -->
+     <update id="updateStaffInfoReturnId" parameterType="Map">
+             update staff
+     <trim prefix="set" suffixOverrides=",">
+     <!-- <if test="parameter.containkey('s_id')"> -->
+     <if test="s_name != null">
+         s_name=#{s_name},
+     </if>
+     <if test="dep_id != null">
+         dep_id=#{dep_id},
+     </if>
+     <if test="entry_time != null">
+         entry_time=#{entry_time},
+     </if>
+     <if test="identity != null">
+         identity=#{identity},
+     </if>
+     <if test="s_pass != null">
+         s_pass=#{s_pass}
+     </if>
+     </trim>
+     where s_id=#{s_id}
+     </update>
+    
+       
+    <!-- 删除数据 -->
+    <delete id="deleteStaffInfoReturnId" parameterType="Integer">
+        delete from staff where s_id=#{s_id}
+    </delete>
+    
+    <!-- 查询所有员工记录 -->
+    <select id="selectAllStaff" parameterType="Integer" resultType="com.as.entity.Staff">
+        select * from staff
+    </select>
+    
+    <select id="findDepidBySid" parameterType="Integer" resultType="Integer">
+    	select staff.dep_id from staff where staff.s_id=#{s_id}
+    </select>
+    
+    <select id="selectStaffByDepId" parameterType="Integer" resultType="com.as.entity.Staff">
+    	select * from staff where staff.dep_id=#{dep_id}
+    </select>
+   
+</mapper>

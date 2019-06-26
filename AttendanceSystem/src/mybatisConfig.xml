@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+<!-- 当前为开发环境 -->
+  <environments default="development">
+    <environment id="development">
+    <!-- 事务管理 -->
+      <transactionManager type="JDBC"/>
+      <!-- 数据源 -->
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/attendance_database?characterEncoding=utf-8"/>
+        <property name="username" value="atten_admin"/>
+        <property name="password" value="123456"/>
+      </dataSource>
+    </environment>
+  </environments>
+
+  <!-- 映射文件 -->
+  <mappers>
+    <!-- 方式一 resource指定相对路径 -->
+    <mapper resource="com/as/mapping/DepartmentMapping.xml"/>
+    <mapper resource="com/as/mapping/TemporaryovertimeMapping.xml"/>
+    <mapper resource="com/as/mapping/OvertimeapplicationMapping.xml"/>
+    <mapper resource="com/as/mapping/StaffMapping.xml"/>
+    <mapper resource="com/as/mapping/ShiftWorkMapping.xml"/>
+    <mapper resource="com/as/mapping/AttendanceMapping.xml"/>
+    <mapper resource="com/as/mapping/AskforleaveMapping.xml"/>
+    <mapper resource="com/as/mapping/MessageMapping.xml"/>
+
+
+    <!-- 方式二 指定与映射文件关联的那个接口类名 要求映射文件和接口名字必须相同 在同一级目录 -->
+    <!-- <mapper class="com.lanou.dao.UserDao"/> -->
+    <!-- <mapper url=""/> -->
+
+    <!-- 方式三 指定扫描某个包下以及子孙包下所有映射文件
+            该方式要求 映射文件名与接口名一致
+    -->
+    <!-- <package name="com/lanou/dao"/> -->
+  </mappers>
+</configuration>

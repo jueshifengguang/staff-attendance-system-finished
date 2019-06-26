@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <!-- sql语句 -->
+<mapper namespace="com.as.mapping.AskforleaveDao">
+	<select id="findAskforApplyByAflid" parameterType="Integer" resultType="com.as.entity.Askforleave">
+		select * from askforleave where afl_id=#{afl_id}
+	</select>
+	
+	
+	<select id="findAskforApplyBySid" parameterType="Integer" resultType="com.as.entity.Askforleave">
+		select * from askforleave where s_id=#{s_id}
+	</select>
+	
+	
+	<insert id="insertNewAskforApply" parameterType="Map">
+		insert into askforleave(s_id,is_approved,is_resumed,starting_date,ending_date,leave_reason,approved_reason,leave_type) values(#{s_id},#{is_approved},#{is_resumed},#{starting_date},#{ending_date},#{leave_reason},#{approved_reason},#{leave_type})
+	</insert>
+	
+	<update id="updateAskApplyforByAflid" parameterType="Map">
+		update askforleave
+		<trim prefix="set" suffixOverrides=",">
+			<if test="s_id != null">
+				s_id=#{s_id},
+			</if>
+			<if test="starting_date != null">
+				starting_date=#{starting_date},
+			</if>
+			<if test="ending_date != null">
+				ending_date=#{ending_date},
+			</if>
+			<if test="leave_reason != null">
+				leave_reason=#{leave_reason},
+			</if>
+			<if test="is_approved != null">
+				is_approved=#{is_approved},
+			</if>
+			<if test="is_resumed != null">
+				is_resumed=#{is_resumed}
+			</if>
+			<if test="approved_reason != null">
+				approved_reason=#{approved_reason}
+			</if>
+			<if test="leave_type != null">
+				leave_type=#{leave_type}
+			</if>
+		</trim>
+		where afl_id=#{afl_id}
+	</update>
+	 
+	 <select id="selectAllAskforApply" parameterType="Integer" resultType="com.as.entity.Askforleave">
+	 	select * from askforleave
+	 </select>
+	 
+	 <delete id="deleteAskforApplyByAflid" parameterType="Integer">
+	 	delete from askforleave where afl_id=#{afl_id}
+	 </delete>
+	 
+	  <select id="selectNoncheckedAskforApplyByDep" parameterType="Integer" resultType="com.as.entity.Askforleave">
+    	select afl.afl_id,afl.s_id,afl.starting_date,afl.ending_date,afl.leave_reason,afl.is_approved,afl.approved_reason,afl.is_resumed,afl.leave_type
+    	from askforleave afl inner join staff 
+    	where 
+    	afl.s_id=staff.s_id and 
+    	(afl.s_id in (select s.s_id from staff s where dep_id=#{dep_id}))
+    </select>
+    
+    <select id="selectAllAskforApplyBySid" parameterType="Integer" resultType="com.as.entity.Askforleave">
+	 	select * from askforleave where s_id=#{s_id}
+	 </select>
+	 
+	 <select id="selectAskforleaveByNowDate" parameterType="Map" resultType="com.as.entity.Askforleave" >
+	 	select * from askforleave where 
+	 	s_id=#{s_id} and is_approved=1 and 
+	 	starting_date&lt;=#{now_date} and ending_date&gt;=#{now_date}
+	 </select>
+	 
+</mapper>

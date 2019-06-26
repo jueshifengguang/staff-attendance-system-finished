@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- sql语句  -->
+<mapper namespace="com.as.mapping.OvertimeapplicationDao">
+    <select id="findOvertimeApplyByOaid" parameterType="Integer" resultType="com.as.entity.Overtimeapplication">
+        select * from overtimeapplication where oa_id=#{oa_id}
+    </select>
+
+
+	<insert id="insertOvertimeApply" parameterType="Map">
+		insert into overtimeapplication(s_id,overtime_start,overtime_end,overtime_reason,is_approved,is_temporary,examination,is_sign) values(#{s_id},#{overtime_start},#{overtime_end},#{overtime_reason},#{is_approved},#{is_temporary},#{examination},#{is_sign})
+	</insert>
+	
+
+	<update id="updateOvertimeApplyByOaid" parameterType="Map">
+   		update overtimeapplication
+   		<trim prefix="set" suffixOverrides=",">
+   			<!-- <if test="_parameter.containsKey('t_overtime_start')"> -->
+   			<if test="overtime_start != null">
+   				overtime_start=#{overtime_start},
+   			</if>
+   			<if test="overtime_end != null">
+   				overtime_end=#{overtime_end},
+   			</if>
+   			<if test="overtime_reason != null">
+   				overtime_reason=#{overtime_reason},
+   			</if>
+   			<if test="is_approved != null">
+   				is_approved=#{is_approved},
+   			</if>
+   			<if test="is_temporary != null">
+   				is_temporary=#{is_temporary},
+   			</if>
+   			<if test="examination != null">
+   				examination=#{examination},
+   			</if>
+   			<if test="is_sign != null">
+   				is_sign=#{is_sign}
+   			</if>
+   		</trim>
+   		where oa_id=#{oa_id}
+   	</update>
+   	
+   	
+   	<select id="selectAllOvertimeApplyBySid" parameterType="Integer" resultType="com.as.entity.Overtimeapplication">
+        select * from overtimeapplication where s_id=#{s_id}
+    </select>
+    
+    
+    <delete id="deleteOvertimeApplyByOaid" parameterType="Integer">
+    	delete from overtimeapplication where oa_id=#{oa_id}
+    </delete>
+    
+    <select id="selectNoncheckedOvertimeApplyByDep" parameterType="Integer" resultType="com.as.entity.Overtimeapplication">
+    	select oa.oa_id,oa.s_id,oa.overtime_start,oa.overtime_end,oa.overtime_reason,oa.is_approved,oa.is_temporary,oa.examination,oa.is_sign 
+    	from overtimeapplication oa inner join staff 
+    	where 
+    	oa.s_id=staff.s_id and 
+    	oa.is_approved=0 and 
+    	(oa.s_id in (select s.s_id from staff s where dep_id=#{dep_id}))
+    </select>
+    
+    <select id="selectCheckedOvertimeApplyByDep" parameterType="Integer" resultType="com.as.entity.Overtimeapplication">
+    	select oa.oa_id,oa.s_id,oa.overtime_start,oa.overtime_end,oa.overtime_reason,oa.is_approved,oa.is_temporary,oa.examination,oa.is_sign 
+    	from overtimeapplication oa inner join staff 
+    	where 
+    	oa.s_id=staff.s_id and 
+    	oa.is_approved!=0 and 
+    	(oa.s_id in (select s.s_id from staff s where dep_id=#{dep_id}))
+    </select>
+    
+    
+    
+    <select id="selectSignInOvertimeApply" parameterType="Map" resultType="com.as.entity.Overtimeapplication">
+    	select * from overtimeapplication where 
+    		s_id=#{s_id} and is_approved=1 and is_temporary=1 and is_sign=0 and 
+			((overtime_start&lt;=#{next_date} and overtime_start>#{now_date}) or 
+			(overtime_start&lt;=#{now_date} and overtime_end>#{now_date}))
+    </select>
+    
+    <select id="selectSignOffOvertimeApply" parameterType="Map" resultType="com.as.entity.Overtimeapplication">
+    	select * from overtimeapplication where 
+    		s_id=#{s_id} and is_approved=1 and is_temporary=1 and is_sign=1 and 
+			((overtime_end>=#{begin_date} and overtime_end&lt;=#{now_date}) or 
+			(overtime_start&lt;=#{now_date} and overtime_end>=#{now_date} ))
+    </select>
+    
+    <select id="selectOvertimeApplyByNowDate" parameterType="Map" resultType="com.as.entity.Overtimeapplication">
+    	select * from overtimeapplication where 
+    		s_id=#{s_id} and 
+    		overtime_start&lt;=#{now_date} and 
+    		#{now_date}&lt;=overtime_end
+    </select>
+    
+    <select id="selectTodayOvertimeApply" parameterType="Map" resultType="com.as.entity.Overtimeapplication">
+    	select * from overtimeapplication where s_id=#{s_id} and is_approved=1 and 
+    		(overtime_start like #{date}"%" or overtime_end like #{date}"%" )
+    </select>
+    
+    <select id="selectOvertimeByMonth" parameterType="Map" resultType="com.as.entity.Overtimeapplication">
+    	select * from overtimeapplication where s_id=#{s_id} and is_approved=1 and 
+    		overtime_start&lt;=#{end_date} and 
+    		#{begin_date}&lt;=overtime_end and 
+    		is_temporary=0
+    </select>
+    
+    <select id="selectTmpOvertimeByMonth" parameterType="Map" resultType="com.as.entity.Overtimeapplication">
+    	select * from overtimeapplication where s_id=#{s_id} and is_approved=1 and 
+    		overtime_start&lt;=#{end_date} and 
+    		#{begin_date}&lt;=overtime_end and 
+    		is_temporary=1 and is_sign=2
+    </select>
+
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- sql语句  -->
+<!-- 有可能多个mapper中有相同id 所以使用namespace区分必填参数 -->
+<mapper namespace="com.as.mapping.DepartmentDao">
+    <!-- 根据id获取User 
+        id用来标识这个sql语句
+        parameterType 指定输入参数的类型
+        resultType 输出结果的类型
+    -->
+    <select id="findDepById" parameterType="Integer" resultType="com.as.entity.Department">
+        <!-- 原生sql语句 
+            #{}代表占位符 等同于?
+            括号中的内容可以随便写，但不能不写
+        -->
+        select * from department where dep_id=#{id}
+    </select>
+
+    <!-- 
+        "%${value}%"
+        如果当前参数需要拼接到字符串中就使用${value} 
+        如果只有只一个参数 value是固定的
+        因为#{xx} 会在字符串左右加上引号
+        "%#{xx}%" == "%"xx"%"
+        resultType 是结果的泛型 如果有多个结果 自动封装list
+    -->
+    <select id="selectByDepName" parameterType="String" resultType="com.as.entity.Department">
+        select * from department where dep_name like "%"#{value}"%"
+    </select>
+
+    <!-- 添加新数据
+     insert中不需要声明返回类型 因为只有Integer
+        仅支持一个参数 参数比较复杂就直接传对象 或者map
+        获取属性 或者map 通过#{属性名} 或 #{key名} 
+    -->
+    <insert id="insertNewDepNotReturn" parameterType="com.as.entity.Department">
+        insert into department values(#{id},#{name})
+    </insert>
+    
+    <select id="selectAllDepartment" resultType="com.as.entity.Department">
+    	select * from department
+    </select>
+    
+</mapper>
